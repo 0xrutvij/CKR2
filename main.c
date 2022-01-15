@@ -1,7 +1,7 @@
-#include "src/headerlib/charcount.h"
+#include "src/headerlib/linecount.h"
 
 int main(int argc, char const *argv[])
 {
-    char_count2();
+    countlines();
     return 0;
 }

@@ -15,6 +15,7 @@ void char_count1()
     printf("%ld\n", nc);
 }
 
+/* Count characters in input; 2nd version */
 void char_count2()
 {
     double nc;
