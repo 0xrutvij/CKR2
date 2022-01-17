@@ -1,0 +1,9 @@
+would
+want
+should
+shall
+could
+can
+gould
+# added eof file character using vi, ctrl+v, ctrl+d (no ctrl release.)
+

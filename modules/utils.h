@@ -16,6 +16,8 @@ int c_lower(int c);
 
 int c_rand(void);
 
+int c_strindex(char s[], char t[]);
+
 int c_strlen(char s[]);
 
 void c_bin(unsigned x);
