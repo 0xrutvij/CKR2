@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <limits.h>
 #include "utils.h"
 
 unsigned long int next = 1;
@@ -34,13 +37,19 @@ void c_copy(char to[], char from[]) {
 /* c_atoi: convert s to integer */
 int c_atoi(char s[]) {
 
-    int i, n;
+    int i, n, sign;
 
-    n = 0;
-    for (i = 0; s[i] >= '0' && s[i] <= '9'; ++i)
+    for (i = 0; isspace(s[i]); i++)
+        ;
+
+    sign = (s[i] == '-') ? -1 : 1;
+    if (s[i] == '+' || s[i] == '-')
+        ++i;
+
+    for (n = 0; isdigit(s[i]); i++)
         n = 10 * n + (s[i] - '0');
 
-    return n;
+    return sign * n;
 }
 
 /* c_lower: convert c to lower case; ASCII only */
@@ -174,13 +183,147 @@ unsigned c_rightrot(unsigned x, int n)
 /* c_bitcount: count 1 bits in x */
 int c_bitcount(unsigned x)
 {
-    int b;
+    int count = x ? 1 : 0;
 
-    for (b = 0; x != 0; x >>= 1)
+    while (x &= (x-1))
+        ++count;
+
+    return count;
+}
+
+/* c_binsearch: find x in v[0] <= v[1] <= v[n-1] */
+int c_binsearch(int x, int v[], int n)
+{
+    int low, high, mid;
+
+    low = 0;
+    high = n - 1;
+    while (low <= high)
     {
-        if (x & 01)
-            b++;
+        mid = (low + high) / 2;
+        if (x < v[mid])
+            high = mid + 1;
+        else if (x > v[mid])
+            low = mid + 1;
+        else
+            return mid;
     }
 
-    return b;
+    return -1;
+}
+
+/* c_print_array: Prints the contents of an array */
+void c_print_array(int v[], int len)
+{
+    printf("\n[");
+    for (int i = 0; i < len; i++)
+    {
+        if (i == len - 1)
+        {
+            printf("%d", v[i]);
+        }
+        else
+        {
+            printf("%d, ", v[i]);
+        }
+    }
+    printf("]");
+}
+
+/* c_shellsort: sort v[0]...v[n-1] into increasing order */
+void c_shellsort(int v[], int n)
+{
+    int gap, i, j, temp;
+
+    for (gap = n / 2; gap > 0; gap /= 2)
+    {
+        for (i = gap; i < n; i++)
+        {
+            for (j = i - gap; j >= 0 && v[j] > v[j + gap]; j-= gap)
+            {
+                temp = v[j];
+                v[j] = v[j + gap];
+                v[j + gap] = temp;
+            }
+        }
+    }
+}
+
+/* c_reverse: reverse a string s in place */
+void c_reverse(char s[])
+{
+    int c, i, j;
+
+    for (i = 0, j = strlen(s) - 1; i < j; i++, j--)
+        c = s[i], s[i] = s[j], s[j] = c;
+}
+
+
+/* c_itoa: convert n to characters in s */
+void c_itoa(int n, char s[])
+{
+    int i, sign, adjust;
+    adjust = 0;
+
+    if (n == INT_MIN)               /* if int is equal to lower limit */
+    {
+        n = n + 1;                  /* make it one more than lower limit to allow for negation*/
+        adjust = 1;                 /* in the end correct for the change by adding adjust */
+    }
+
+    if ((sign = n) < 0)             /* record sign */
+        n = -n;                     /* make n positive */
+
+    i = 0;
+    do {                            /* generate digits in reverse order */
+        s[i++] = n % 10 + '0';      /* get next digit */
+    } while ((n /= 10) > 0);        /* delete it */
+
+    if (sign < 0)
+        s[i++] = '-';
+
+    s[i] = '\0';
+    c_reverse(s);
+    if (adjust)
+    {
+        s[i - 1] += 1;
+    }
+}
+
+/* c_itob: integer n into a base b char representation in the string s. b is one of 2, 8, 16 */
+void c_itob(int n, char s[], int b)
+{
+    int i = 0, val;
+    switch (b)
+    {
+    case 16:
+        for (i = 0; n != 0; n>>=4, i++)
+        {
+            val = n & 0xf;
+            s[i] = (val < 10) ? val + '0' : (val - 10) + 'a';
+        }
+        break;
+
+    case 8:
+        for (i = 0; n != 0; n>>=3, i++)
+        {
+            val = n & 0x7;
+            s[i] = (val % 8) + '0';
+        }
+        break;
+
+    case 2:
+        for (i = 0; n != 0; n>>=1, i++)
+        {
+            val = n & 0x1;
+            s[i] = (val % 2) + '0';
+        }
+        break;
+
+    default:
+        printf("\nerror invalid base value, use one of 2, 8, 16.\n");
+        break;
+    }
+    s[i] = '\0';
+    c_reverse(s);
 }
