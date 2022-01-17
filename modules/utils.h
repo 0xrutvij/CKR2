@@ -4,6 +4,8 @@
 
 #define MAXLINE 1000 /* maximum input line length */
 
+double c_atof(char s[]);
+
 int c_atoi(char s[]);
 
 int c_binsearch(int x, int v[], int n);
@@ -19,6 +21,14 @@ int c_rand(void);
 int c_strindex(char s[], char t[]);
 
 int c_strlen(char s[]);
+
+unsigned c_getbits(unsigned x, int p, int n);
+
+unsigned c_invert(unsigned x, int p, int n);
+
+unsigned c_rightrot(unsigned x, int n);
+
+unsigned c_setbits(unsigned x, int p, int n, unsigned y);
 
 void c_bin(unsigned x);
 
@@ -39,13 +49,5 @@ void c_srand(unsigned int seed);
 void c_strcat(char s[], char t[]);
 
 void c_reverse(char s[]);
-
-unsigned c_getbits(unsigned x, int p, int n);
-
-unsigned c_invert(unsigned x, int p, int n);
-
-unsigned c_rightrot(unsigned x, int n);
-
-unsigned c_setbits(unsigned x, int p, int n, unsigned y);
 
 #endif
