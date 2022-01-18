@@ -3,6 +3,7 @@
 #include <string.h>
 #include <limits.h>
 #include <math.h>
+#include "buffer.h"
 #include "utils.h"
 
 unsigned long int next = 1;
@@ -62,12 +63,12 @@ int c_lower(int c) {
 /* c_strlen: return length of s */
 int c_strlen(char s[]){
 
-    int i;
+    int n;
 
-    while (s[i] != '\0')
-        ++i;
+    for (n = 0; *s != '\0'; s++)
+        n++;
 
-    return i;
+    return n;
 }
 
 /* c_rand: return pseudo-random integer on 0..32767 */
@@ -96,12 +97,12 @@ void c_squeeze(char s[], int c) {
 }
 
 /* c_strcat: concatenate t to end of s; s must be big enough */
-void c_strcat(char s[], char t[]) {
-    int i, j;
-    for (i = j = 0; s[i] != '\0'; ++i)
+void c_strcat(char *s, char *t) {
+    while (*s++)
         ;
 
-    while ((s[i++] = t[j++]) != '\0')
+    --s;
+    while ((*s++ = *t++))
         ;
 }
 
@@ -381,4 +382,105 @@ double atof(char s[])
     }
 
     return (sign * val / power) * pow(10, exp_sign * exp_power);
+}
+
+/* c_swap: swap the variables in px & py */
+void c_swap(int *px, int *py)
+{
+    int temp;
+    temp = *px;
+    *px = *py;
+    *py = temp;
+}
+
+/* swap_array: interchange v[i] and v[j] */
+void static swap_array(int v[], int i, int j)
+{
+    int temp;
+
+    temp = v[i];
+    v[i] = v[j];
+    v[j] = temp;
+}
+
+/* c_qsort: sort v[left]...v[right] into increasing order */
+void c_qsort(int v[], int left, int right)
+{
+    int i, last;
+
+    if (left >= right) /* do nothing if < 2 elements */
+        return;
+
+    swap_array(v, left, (left + right) / 2);    /* move partition element */
+    last = left;                                /* to v[0] */
+
+    for (i = left + 1; i <= right; i++)         /* partition */
+    {
+        if (v[i] < v[left])
+            swap_array(v, ++last, i);
+    }
+    swap_array(v, left, last);                  /* restore partition elem */
+    c_qsort(v, left, last - 1);
+    c_qsort(v, last + 1, right);
+}
+
+/* 
+c_getint: get next integer from input int *pn.
+Returns EOF for end of file, 
+zero if next input is not a number 
+and +ve value for valid numbers.
+ */
+int c_getint(int *pn)
+{
+    int c, sign;
+
+    while (isspace(c = getch()))
+        ;
+
+    if (!isdigit(c) && c != EOF && c != '+' && c != '-')
+    {
+        ungetch(c);
+        return 0;
+    }
+
+    sign = (c == '-') ? -1 : 1;
+    if (c == '+' || c == '-')
+        c = getch();
+
+    for (*pn = 0; isdigit(c); c = getch())
+        *pn = 10 * *pn + (c - '0');
+
+    *pn *= sign;
+    if (c != EOF)
+        ungetch(c);
+
+    return c;
+}
+
+/* c_strcpy: copy t to s; array subscript version */
+void c_strcpy(char *s, char *t)
+{
+    while((*s++ = *t++))
+        ;
+}
+
+/* c_strcmp: return <0 if s<t, 0 if s==t, >0 if s>t */
+int c_strcmp(char *s, char* t)
+{
+    for (; *s == *t; s++, t++)
+        if (*s == '\0')
+            return 0;
+
+    return *s - *t;
+}
+
+/* c_strend: returns 1 if the string t occurs at the end of string s, else 0 */
+int c_strend(char *s, char *t)
+{
+    s += strlen(s) - strlen(t);
+
+    while (*s && *s++ == *t++)
+        ;
+
+    return !*s;
 }
