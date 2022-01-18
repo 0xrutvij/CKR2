@@ -2,19 +2,18 @@
 run: main
 	./main
 
-main: utils buffer
+main: utils
 	cc -c main.c -o main.o
-	cc modules/compiledModules/utils.o modules/compiledModules/buffer.o main.o -o main
-
-patternmatch_test: patternmatch
-	./minigrams/patternmatch/patternmatch.exec < ./minigrams/patternmatch/test.txt
+	cc modules/compiledModules/utils.o main.o -o main
 
 patternmatch: utils
 	cc -c minigrams/patternmatch/main.c -o minigrams/patternmatch/main.o
 	cc modules/compiledModules/utils.o minigrams/patternmatch/main.o -o minigrams/patternmatch/patternmatch.exec
+	./minigrams/patternmatch/patternmatch.exec < ./minigrams/patternmatch/test.txt
 
-utils: modules/utils.c
-	cc -c modules/utils.c -o modules/compiledModules/utils.o
+utils: modules/utils.c buffer
+	cc -c modules/utils.c -o modules/compiledModules/pre_utils.o
+	ld -r modules/compiledModules/pre_utils.o modules/compiledModules/buffer.o -o modules/compiledModules/utils.o
 
 stack: modules/stack.c
 	cc -c modules/stack.c -o modules/compiledModules/stack.o
