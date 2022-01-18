@@ -5,6 +5,7 @@
 #include <math.h>
 #include "buffer.h"
 #include "utils.h"
+#include "pseudomem.h"
 
 unsigned long int next = 1;
 #define dprint(expr) printf(#expr " = "); c_bin(expr); printf("\n")
@@ -483,4 +484,31 @@ int c_strend(char *s, char *t)
         ;
 
     return !*s;
+}
+
+/* c_readlines: read input lines */
+int c_readlines(char* lineptr[], int maxlines)
+{
+    int len, nlines;
+    char *p, line[MAXLINE];
+
+    nlines = 0;
+    while ((len = c_getline(line, MAXLINE)) > 0)
+        if (nlines >= maxlines || (p = alloc(len)) == NULL)
+            return -1;
+        else
+        {
+            line[len - 1] = '\0';
+            strcpy(p, line);
+            lineptr[nlines++] = p;
+        }
+
+    return nlines;
+}
+
+/* c_writelines: write output lines */
+void c_writelines(char *lineptr[], int nlines)
+{
+    while(nlines-- > 0)
+        printf("%s\n", *lineptr++);
 }

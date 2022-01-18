@@ -22,6 +22,8 @@ int c_getline(char s[], int lim);
 
 int c_lower(int c);
 
+int c_readlines(char *lineptr[], int maxlines);
+
 int c_rand(void);
 
 int c_strcmp(char *s, char *t);
@@ -52,6 +54,8 @@ void c_print_array(int v[], int len);
 
 void c_qsort(int v[], int left, int right);
 
+void c_reverse(char s[]);
+
 void c_shellsort(int v[], int n);
 
 void c_squeeze(char s[], int c);
@@ -64,6 +68,6 @@ void c_strcpy(char *s, char *t);
 
 void c_swap(int *px, int *py);
 
-void c_reverse(char s[]);
+void c_writelines(char *lineptr[], int nlines);
 
 #endif
